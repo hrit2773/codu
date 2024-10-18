@@ -5,7 +5,7 @@ import { TagIcon } from "@heroicons/react/20/solid";
 import ArticlePreview from "@/components/ArticlePreview/ArticlePreview";
 import ArticleLoading from "@/components/ArticlePreview/ArticleLoading";
 import { useInView } from "react-intersection-observer";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import challenge from "@/public/images/announcements/challenge.png";
@@ -21,6 +21,7 @@ const ArticlesPage = () => {
   const { data: session } = useSession();
   const filter = searchParams?.get("filter");
   const dirtyTag = searchParams?.get("tag");
+  const pathName=usePathname();
 
   const tag = typeof dirtyTag === "string" ? dirtyTag : null;
   type Filter = "newest" | "oldest" | "top";
@@ -36,7 +37,7 @@ const ArticlesPage = () => {
 
   const selectedSortFilter = getSortBy();
 
-  const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } =
+  const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage,refetch } =
     api.post.published.useInfiniteQuery(
       {
         limit: 15,
@@ -45,6 +46,7 @@ const ArticlesPage = () => {
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
+        cacheTime:0,
       },
     );
 
